@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER_HANDBOOK v1.0</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <div class="app-container">
+    <header>
+      <div class="logo">>_ CYBER_HANDBOOK<span>.exe</span></div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search topic (e.g. SQLi, Phishing)...">
+      </div>
+    </header>
+
+    <main>
+      <aside class="sidebar">
+        <h3>SYS_INDEX</h3>
+        <ul>
+          <li onclick="filterCategory('All')">[+] ALL_TOPICS</li>
+          <li onclick="filterCategory('Web Attacks')">[+] WEB_ATTACKS</li>
+          <li onclick="filterCategory('Defensive Security')">[+] DEFENSIVE_SEC</li>
+        </ul>
+      </aside>
+
+      <section class="content-area">
+        <div id="cardsGrid" class="cards-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+micro style.css
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+  background-color: #050505;
+  color: #00ff66;
+  overflow-x: hidden;
+}
+
+#matrix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  opacity: 0.15;
+}
+
+.app-container {
+  padding: 15px;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #00ff66;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px #00ff66;
+}
+
+.search-box input {
+  background: #111;
+  border: 1px solid #00ff66;
+  color: #00ff66;
+  padding: 8px 12px;
+  outline: none;
+  width: 250px;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media(min-width: 768px) {
+  main { flex-direction: row; }
+}
+
+.sidebar {
+  border: 1px dashed #00ff66;
+  padding: 10px;
+  min-width: 200px;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.sidebar li {
+  padding: 6px 0;
+  cursor: pointer;
+  color: #00f3ff;
+}
+
+.sidebar li:hover {
+  text-shadow: 0 0 8px #00f3ff;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+  width: 100%;
+}
+
+.card {
+  background: rgba(10, 20, 10, 0.85);
+  border: 1px solid #00ff66;
+  padding: 15px;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+}
+
+.card h3 {
+  color: #00f3ff;
+  margin-bottom: 8px;
+}
+
+.card .tag {
+  font-size: 0.8rem;
+  background: #00ff66;
+  color: #000;
+  padding: 2px 6px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.card pre {
+  background: #000;
+  color: #ff0055;
+  padding: 8px;
+  white-space: pre-wrap;
+  margin-top: 10px;
+  border-left: 3px solid #ff0055;
+}
+micro script.js
+const allData = [
+  {
+    id: "phishing",
+    category: "Web Attacks",
+    title: "Phishing Attack",
+    description: "Phishing ek social engineering attack hai jisme attacker fake website/email banakar user ke credentials chura leta hai.",
+    howItWorks: "1. Attacker fake link bhejta hai.\n2. User login detail daalta hai.\n3. Credentials attacker ke paas receive hote hain.",
+    defense: "Double check URLs, Enable 2FA, never click suspicious links."
+  },
+  {
+    id: "sqli",
+    category: "Web Attacks",
+    title: "SQL Injection (SQLi)",
+    description: "SQLi attack tab hota hai jab input box mein malicious SQL query daal kar database ka unauthorized access liya jata hai.",
+    howItWorks: "1. Input field me SQL query inject hoti hai.\n2. Database logic bypass hoti hai.\n3. Data leak ya delete ho sakta hai.",
+    defense: "Use Parameterized Queries & Prepared Statements."
+  },
+  {
+    id: "firewall",
+    category: "Defensive Security",
+    title: "Firewall System",
+    description: "Firewall network traffic ko rule-set ke basis par monitor aur filter karta hai.",
+    howItWorks: "1. Incoming/Outgoing packets ko inspect karta hai.\n2. Unauthorized IP/Ports ko block karta hai.",
+    defense: "Rules up-to-date rakhein aur unused ports close rakhein."
+  }
+];
+
+// Matrix Canvas Effect
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const chars = '01101001010101101';
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff66';
+  ctx.font = fontSize + 'px monospace';
+
+  drops.forEach((y, i) => {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(text, i * fontSize, y * fontSize);
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 33);
+
+// Render Data Cards
+renderCards(allData);
+
+function renderCards(items) {
+  const container = document.getElementById('cardsGrid');
+  container.innerHTML = '';
+  
+  if (items.length === 0) {
+    container.innerHTML = `<p style="color: #ff0055;">[!] NO_MATCHING_DATA_FOUND...</p>`;
+    return;
+  }
+
+  items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <span class="tag">${item.category}</span>
+      <h3>${item.title}</h3>
+      <p>${item.description}</p>
+      <pre><b>HOW IT WORKS:</b>\n${item.howItWorks}</pre>
+      <p style="margin-top:8px; color:#00f3ff;"><b>DEFENSE:</b> ${item.defense}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Search Filter
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase();
+  const filtered = allData.filter(item => 
+    item.title.toLowerCase().includes(query) || 
+    item.description.toLowerCase().includes(query) ||
+    item.category.toLowerCase().includes(query)
+  );
+  renderCards(filtered);
+});
+
+// Category Filter
+function filterCategory(cat) {
+  if (cat === 'All') renderCards(allData);
+  else renderCards(allData.filter(item => item.category === cat));
+}
+# Git setup
+git init
+git add .
+git commit -m "First Cyber Security Handbook Commit"
+git branch -M main
+
+# Connection with GitHub (Tumhara exact link GitHub page par dikhega)
+git remote add origin https://github.com/YOUR_GITHUB_USERNAME/cyber-handbook.git
+
+# Code Upload Karo
+git push -u origin main
